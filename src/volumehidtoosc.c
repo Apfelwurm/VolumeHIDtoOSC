@@ -41,6 +41,9 @@ cfg_opt_t opts[] =
     CFG_STR("VENDOR", "Vendor=2341", CFGF_NONE),
     CFG_STR("PRODUCT", "Product=484d", CFGF_NONE),
     CFG_STR("EV", "EV=1f", CFGF_NONE),
+    CFG_STR("IP", "10.10.10.227", CFGF_NONE),
+    CFG_STR("PORT", "8000", CFGF_NONE),
+    CFG_STR("OSC_PATH", "/mastervolume", CFGF_NONE),
     CFG_INT("VOL_PLUS",115,CFGF_NONE),
     CFG_INT("VOL_PLUS_TIMES",2,CFGF_NONE),
     CFG_INT("VOL_MINUS",114,CFGF_NONE),
@@ -54,6 +57,9 @@ cfg_opt_t opts[] =
     CFG_END()
 };
 cfg_t *cfg;
+
+lo_address t;
+
 
 
 char *extract_keyboard_eventname()
@@ -128,6 +134,16 @@ char *extract_keyboard_eventname()
     }
 }
 
+int sendosc(int currvol)
+{
+
+
+    if (lo_send(t, cfg_getstr(cfg, "OSC_PATH"), "i", currvol) == -1) {
+        printf("OSC error %d: %s\n", lo_address_errno(t), lo_address_errstr(t));
+    }
+    return 0;
+}
+
 
 int main(void)
 {
@@ -150,9 +166,14 @@ int main(void)
         exit(1);
     }
 
-    sleep(3);
+    
+    
+
+    t = lo_address_new(cfg_getstr(cfg, "IP"), cfg_getstr(cfg, "PORT"));
     
     volume = cfg_getint(cfg, "VOL_START");
+    sendosc(volume);
+    sentvolume = volume;
 
     if (extract_keyboard_eventname() == "not found")
     {
@@ -226,6 +247,7 @@ int main(void)
             if (volume != sentvolume)
             {
                 printf("sendvol  %d\n", volume);
+                sendosc(volume);
                 sentvolume = volume;
             }
         }
@@ -233,12 +255,14 @@ int main(void)
         if(mutetrigger)
         {
             printf("sendvol  %d\n", cfg_getint(cfg, "VOL_MIN"));
+            sendosc(cfg_getint(cfg, "VOL_MIN"));
             mutetrigger = false;
             mute = true;
         }
         if(unmutetrigger)
         {
             printf("sendvol  %d\n", volume);
+            sendosc(volume);
             unmutetrigger = false;
             mute = false;
         }

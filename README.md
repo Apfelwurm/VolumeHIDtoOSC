@@ -7,5 +7,5 @@ working:
 * config file
   
 todo:
-* OSC sending
+* OSC testing
 * ci

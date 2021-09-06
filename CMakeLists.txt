@@ -67,7 +67,7 @@ endfunction(install_conf)
 
 
 # Link libs
-target_link_libraries(volumehidtoosc confuse)
+target_link_libraries(volumehidtoosc confuse lo)
 
 # Install systemd unit files 
 #install_conf (./volumehidtoosc.service ${SYSTEMD_UNIT_DIR})
