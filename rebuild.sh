@@ -1,8 +1,4 @@
 #!/bin/bash
-# rm -rf /etc/volumehidtoosc/volumehidtoosc.conf
-# rm -rf /usr/lib/systemd/system/volumehidtoosc.service
-# rm -rf /usr/lib/systemd/user/volumehidtoosc.service
-# rm -rf /usr/bin/volumehidtoosc
 rm -rf build
 mkdir build
 cd build
@@ -11,8 +7,9 @@ make
 mkdir packageroot
 cp -rf ../DEBIAN packageroot/
 mkdir -p packageroot/usr/bin/
-mkdir -p packageroot/usr/lib/systemd/user/
+mkdir -p packageroot/etc/volumehidtoosc/
 cp bin/volumehidtoosc packageroot/usr/bin/
+cp ../volumehidtoosc.conf packageroot/etc/volumehidtoosc/
 
 dpkg-deb -b packageroot volumehidtoosc_1.0.0_amd64.deb
 

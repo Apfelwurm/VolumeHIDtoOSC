@@ -34,6 +34,7 @@
 #include <unistd.h>
 #include <stdbool.h>
 #include <confuse.h>
+#include <rtosc/rtosc.h>
 
 cfg_opt_t opts[] =
 {
@@ -41,14 +42,14 @@ cfg_opt_t opts[] =
     CFG_STR("PRODUCT", "Product=484d", CFGF_NONE),
     CFG_STR("EV", "EV=1f", CFGF_NONE),
     CFG_INT("VOL_PLUS",115,CFGF_NONE),
-    CFG_INT("VOL_PLUS_TIMES",4,CFGF_NONE),
+    CFG_INT("VOL_PLUS_TIMES",2,CFGF_NONE),
     CFG_INT("VOL_MINUS",114,CFGF_NONE),
-    CFG_INT("VOL_MINUS_TIMES",4,CFGF_NONE),
+    CFG_INT("VOL_MINUS_TIMES",2,CFGF_NONE),
     CFG_INT("MUTE_TOGGLE",113,CFGF_NONE),
     CFG_INT("MUTE_TOGGLE_TIMES",2,CFGF_NONE),
     CFG_INT("VOL_MIN",0,CFGF_NONE),
     CFG_INT("VOL_MAX",100,CFGF_NONE),
-    CFG_INT("VOL_STEP",2,CFGF_NONE),
+    CFG_INT("VOL_STEP",1,CFGF_NONE),
     CFG_INT("VOL_START",30,CFGF_NONE),
     CFG_END()
 };

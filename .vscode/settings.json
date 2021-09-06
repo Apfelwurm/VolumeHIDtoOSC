@@ -17,6 +17,8 @@
   "C_Cpp_Runner.enableWarnings": true,
   "C_Cpp_Runner.warningsAsError": false,
   "files.associations": {
-    "pulseaudio.h": "c"
+    "pulseaudio.h": "c",
+    "confuse.h": "c",
+    "rtosc.h": "c"
   }
 }

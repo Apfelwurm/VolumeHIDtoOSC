@@ -4,8 +4,8 @@ working:
 
 * usb device detection
 * count logic
-
+* config file
+  
 todo:
-* config file build copy and cmake
 * OSC sending
 * ci
