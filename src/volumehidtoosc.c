@@ -33,21 +33,26 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdbool.h>
+#include <confuse.h>
 
-#define EVDEV "/dev/input/event14"
-#define VENDOR "Vendor=2341"
-#define PRODUCT "Product=484d"
-#define EV "EV=1f"
-#define VOL_PLUS 115
-#define VOL_PLUS_TIMES 4
-#define VOL_MINUS 114
-#define VOL_MINUS_TIMES 4
-#define MUTE_TOGGLE 113
-#define MUTE_TOGGLE_TIMES 2
-#define VOL_MIN 0
-#define VOL_MAX 100
-#define VOL_STEP 2
-#define VOL_START 30
+cfg_opt_t opts[] =
+{
+    CFG_STR("VENDOR", "Vendor=2341", CFGF_NONE),
+    CFG_STR("PRODUCT", "Product=484d", CFGF_NONE),
+    CFG_STR("EV", "EV=1f", CFGF_NONE),
+    CFG_INT("VOL_PLUS",115,CFGF_NONE),
+    CFG_INT("VOL_PLUS_TIMES",4,CFGF_NONE),
+    CFG_INT("VOL_MINUS",114,CFGF_NONE),
+    CFG_INT("VOL_MINUS_TIMES",4,CFGF_NONE),
+    CFG_INT("MUTE_TOGGLE",113,CFGF_NONE),
+    CFG_INT("MUTE_TOGGLE_TIMES",2,CFGF_NONE),
+    CFG_INT("VOL_MIN",0,CFGF_NONE),
+    CFG_INT("VOL_MAX",100,CFGF_NONE),
+    CFG_INT("VOL_STEP",2,CFGF_NONE),
+    CFG_INT("VOL_START",30,CFGF_NONE),
+    CFG_END()
+};
+cfg_t *cfg;
 
 
 char *extract_keyboard_eventname()
@@ -85,15 +90,18 @@ char *extract_keyboard_eventname()
         }
 
 
-        if (strstr(buffer, PRODUCT)) {
-            productmatch = true;
+        if (strstr(buffer, cfg_getstr(cfg, "PRODUCT"))) {
+            productmatch = true;	        
         }
-        if (strstr(buffer, VENDOR)) {
+        if (strstr(buffer, cfg_getstr(cfg, "VENDOR"))) {
             vendormatch = true;
+
         }
-        if (strstr(buffer, EV)) {
+        if (strstr(buffer, cfg_getstr(cfg, "EV"))) {
             evmatch = true;
+
         }
+       
 
         if (evmatch && productmatch && vendormatch)
         {
@@ -128,13 +136,22 @@ int main(void)
     int volminuscount = 0;
     int mutetogglecount = 0;
     int sentvolume = 0;
-    int volume = VOL_START;
+    int volume = 0;
     bool mutetrigger = false;
     bool unmutetrigger = false;
     bool mute = false;
     char *evdev;
 
+    cfg = cfg_init(opts, CFGF_NONE);
+    if(cfg_parse(cfg, "/etc/volumehidtoosc/volumehidtoosc.conf") == CFG_PARSE_ERROR)
+    {
+        printf("Config error");
+        exit(1);
+    }
+
     sleep(3);
+    
+    volume = cfg_getint(cfg, "VOL_START");
 
     if (extract_keyboard_eventname() == "not found")
     {
@@ -152,53 +169,45 @@ int main(void)
 
 
     while(read(fd, &evt, sizeof(struct input_event)) > 0) {
-        // printf("\n\ncaptured\n");
 
-        // printf("code = %d\n", evt.code);
-        // printf("time = %d\n", evt.time);
-        // printf("val = %d\n", evt.value);
-        // printf("type = %d\n", evt.type);
 
          if (!mute)
         {
-            if (evt.code == VOL_PLUS)
+            if (evt.code == cfg_getint(cfg, "VOL_PLUS"))
             {
                 volpluscount++;
             }
-            if (evt.code == VOL_MINUS)
+            if (evt.code == cfg_getint(cfg, "VOL_MINUS"))
             {
                 volminuscount++;
             }
         }
-        if (evt.code == MUTE_TOGGLE)
+        if (evt.code == cfg_getint(cfg, "MUTE_TOGGLE"))
         {
             mutetogglecount++;  
         }
 
 
-        if (volpluscount == VOL_PLUS_TIMES)
+        if (volpluscount == cfg_getint(cfg, "VOL_PLUS_TIMES"))
         {
             volpluscount=0;
-            // printf("LAUDER\n");
-            if ((volume + VOL_STEP ) <= VOL_MAX)
+            if ((volume + cfg_getint(cfg, "VOL_STEP") ) <= cfg_getint(cfg, "VOL_MAX"))
             {
-            volume = volume + VOL_STEP;
+            volume = volume + cfg_getint(cfg, "VOL_STEP");
             }
 
         }        
-        if (volminuscount == VOL_MINUS_TIMES)
+        if (volminuscount == cfg_getint(cfg, "VOL_MINUS_TIMES"))
         {
             volminuscount=0;
-            // printf("LEISER\n");
-            if ((volume - VOL_STEP ) >= VOL_MIN)
+            if ((volume - cfg_getint(cfg, "VOL_STEP") ) >= cfg_getint(cfg, "VOL_MIN"))
             {
-                volume = volume - VOL_STEP;
+                volume = volume - cfg_getint(cfg, "VOL_STEP");
             }
         }        
-        if (mutetogglecount == MUTE_TOGGLE_TIMES)
+        if (mutetogglecount == cfg_getint(cfg, "MUTE_TOGGLE_TIMES"))
         {
             mutetogglecount=0;
-            // printf("TOGGLEMUTE\n");
             if (mute)
             {
                 unmutetrigger = true;
@@ -222,7 +231,7 @@ int main(void)
 
         if(mutetrigger)
         {
-            printf("sendvol  %d\n", VOL_MIN);
+            printf("sendvol  %d\n", cfg_getint(cfg, "VOL_MIN"));
             mutetrigger = false;
             mute = true;
         }

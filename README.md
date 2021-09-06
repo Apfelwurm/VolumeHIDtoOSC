@@ -6,6 +6,6 @@ working:
 * count logic
 
 todo:
-* config file
+* config file build copy and cmake
 * OSC sending
 * ci

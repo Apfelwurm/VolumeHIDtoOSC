@@ -1,5 +1,5 @@
 # Minimal version of CMake
-cmake_minimum_required (VERSION 2.6)
+cmake_minimum_required (VERSION 3.13)
 
 # Build type
 if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
@@ -63,6 +63,10 @@ function(install_conf src dest)
   ")
 endfunction(install_conf)
 
+
+
+# Link libs
+target_link_libraries(volumehidtoosc confuse)
 
 # Install systemd unit files 
 # install_conf (./volumehidtoosc.service ${SYSTEMD_UNIT_DIR})
