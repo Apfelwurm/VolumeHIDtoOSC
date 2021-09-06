@@ -8,3 +8,4 @@ working:
 todo:
 * config file
 * OSC sending
+* ci
