@@ -1,0 +1,3 @@
+[submodule "lib/rtosc"]
+	path = lib/rtosc
+	url = https://github.com/fundamental/rtosc.git
