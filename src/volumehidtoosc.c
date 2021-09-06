@@ -34,7 +34,7 @@
 #include <unistd.h>
 #include <stdbool.h>
 #include <confuse.h>
-#include <rtosc/rtosc.h>
+#include "lo/lo.h"
 
 cfg_opt_t opts[] =
 {

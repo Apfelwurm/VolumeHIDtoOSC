@@ -2,26 +2,6 @@
 cmake_minimum_required (VERSION 3.13)
 
 
-
-#Include RTOSC
-if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/lib/rtosc/CMakeLists.txt")
-    message(STATUS "RTOSC NOT FOUND")
-    message(STATUS "Attempting to checkout submodule")
-    find_package(Git REQUIRED)
-    execute_process(COMMAND git submodule update --init)
-    if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/lib/rtosc/CMakeLists.txt")
-        message(FATAL_ERROR "FAILED TO CHECKOUT RTOSC\n"
-        "please check file permissions and your network")
-    endif()
-else()
-    message(STATUS "Found Rtosc Submodule...")
-endif()
-
-set(RTOSC_NO_INSTALL TRUE)
-include("lib/rtosc/cmake/ColorMessage.cmake")
-add_subdirectory(lib/rtosc)
-include_directories(lib/rtosc/include)
-
 # Build type
 if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
 	message(STATUS "Setting build type to 'Release' as none was specified.")
@@ -87,8 +67,7 @@ endfunction(install_conf)
 
 
 # Link libs
-target_link_libraries(volumehidtoosc rtosc rtosc-cpp confuse)
-# target_link_libraries(volumehidtoosc confuse)
+target_link_libraries(volumehidtoosc confuse)
 
 # Install systemd unit files 
 #install_conf (./volumehidtoosc.service ${SYSTEMD_UNIT_DIR})
