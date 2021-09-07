@@ -7,6 +7,4 @@ working:
 * config file
   
 todo:
-* OSC testing
-* ci
-* service implementation
+* documentation
