@@ -41,19 +41,19 @@ cfg_opt_t opts[] =
     CFG_STR("VENDOR", "Vendor=2341", CFGF_NONE),
     CFG_STR("PRODUCT", "Product=484d", CFGF_NONE),
     CFG_STR("EV", "EV=1f", CFGF_NONE),
-    CFG_STR("IP", "10.10.10.227", CFGF_NONE),
-    CFG_STR("PORT", "8000", CFGF_NONE),
-    CFG_STR("OSC_PATH", "/mastervolume", CFGF_NONE),
+    CFG_STR("IP", "10.10.10.220", CFGF_NONE),
+    CFG_STR("PORT", "7001", CFGF_NONE),
+    CFG_STR("OSC_PATH", "/1/mastervolume", CFGF_NONE),
     CFG_INT("VOL_PLUS",115,CFGF_NONE),
     CFG_INT("VOL_PLUS_TIMES",2,CFGF_NONE),
     CFG_INT("VOL_MINUS",114,CFGF_NONE),
     CFG_INT("VOL_MINUS_TIMES",2,CFGF_NONE),
     CFG_INT("MUTE_TOGGLE",113,CFGF_NONE),
     CFG_INT("MUTE_TOGGLE_TIMES",2,CFGF_NONE),
-    CFG_INT("VOL_MIN",0,CFGF_NONE),
-    CFG_INT("VOL_MAX",100,CFGF_NONE),
-    CFG_INT("VOL_STEP",1,CFGF_NONE),
-    CFG_INT("VOL_START",30,CFGF_NONE),
+    CFG_FLOAT("VOL_MIN",0.0,CFGF_NONE),
+    CFG_FLOAT("VOL_MAX",1.0,CFGF_NONE),
+    CFG_FLOAT("VOL_STEP",0.002,CFGF_NONE),
+    CFG_FLOAT("VOL_START",0.3,CFGF_NONE),
     CFG_END()
 };
 cfg_t *cfg;
@@ -134,11 +134,11 @@ char *extract_keyboard_eventname()
     }
 }
 
-int sendosc(int currvol)
+int sendosc(float currvol)
 {
 
 
-    if (lo_send(t, cfg_getstr(cfg, "OSC_PATH"), "i", currvol) == -1) {
+    if (lo_send(t, cfg_getstr(cfg, "OSC_PATH"), "ff", currvol) == -1) {
         printf("OSC error %d: %s\n", lo_address_errno(t), lo_address_errstr(t));
     }
     return 0;
@@ -152,8 +152,8 @@ int main(void)
     int volpluscount = 0;
     int volminuscount = 0;
     int mutetogglecount = 0;
-    int sentvolume = 0;
-    int volume = 0;
+    float sentvolume = 0.0;
+    float volume = 0.0;
     bool mutetrigger = false;
     bool unmutetrigger = false;
     bool mute = false;
@@ -171,7 +171,7 @@ int main(void)
 
     t = lo_address_new(cfg_getstr(cfg, "IP"), cfg_getstr(cfg, "PORT"));
     
-    volume = cfg_getint(cfg, "VOL_START");
+    volume = cfg_getfloat(cfg, "VOL_START");
     sendosc(volume);
     sentvolume = volume;
 
@@ -213,18 +213,26 @@ int main(void)
         if (volpluscount == cfg_getint(cfg, "VOL_PLUS_TIMES"))
         {
             volpluscount=0;
-            if ((volume + cfg_getint(cfg, "VOL_STEP") ) <= cfg_getint(cfg, "VOL_MAX"))
+            if ((volume + cfg_getfloat(cfg, "VOL_STEP") ) <= cfg_getfloat(cfg, "VOL_MAX"))
             {
-            volume = volume + cfg_getint(cfg, "VOL_STEP");
+            volume = volume + cfg_getfloat(cfg, "VOL_STEP");
+            }
+            else
+            {
+                volume = cfg_getfloat(cfg, "VOL_MAX");
             }
 
         }        
         if (volminuscount == cfg_getint(cfg, "VOL_MINUS_TIMES"))
         {
             volminuscount=0;
-            if ((volume - cfg_getint(cfg, "VOL_STEP") ) >= cfg_getint(cfg, "VOL_MIN"))
+            if ((volume - cfg_getfloat(cfg, "VOL_STEP") ) >= cfg_getfloat(cfg, "VOL_MIN"))
             {
-                volume = volume - cfg_getint(cfg, "VOL_STEP");
+                volume = volume - cfg_getfloat(cfg, "VOL_STEP");
+            }
+            else
+            {
+                volume = cfg_getfloat(cfg, "VOL_MIN");
             }
         }        
         if (mutetogglecount == cfg_getint(cfg, "MUTE_TOGGLE_TIMES"))
@@ -246,7 +254,7 @@ int main(void)
         {
             if (volume != sentvolume)
             {
-                printf("sendvol  %d\n", volume);
+                printf("sendvol  %f\n", volume);
                 sendosc(volume);
                 sentvolume = volume;
             }
@@ -254,14 +262,14 @@ int main(void)
 
         if(mutetrigger)
         {
-            printf("sendvol  %d\n", cfg_getint(cfg, "VOL_MIN"));
-            sendosc(cfg_getint(cfg, "VOL_MIN"));
+            printf("sendvol  %f\n", cfg_getfloat(cfg, "VOL_MIN"));
+            sendosc(cfg_getfloat(cfg, "VOL_MIN"));
             mutetrigger = false;
             mute = true;
         }
         if(unmutetrigger)
         {
-            printf("sendvol  %d\n", volume);
+            printf("sendvol  %f\n", volume);
             sendosc(volume);
             unmutetrigger = false;
             mute = false;
