@@ -53,7 +53,7 @@ cfg_opt_t opts[] =
     CFG_FLOAT("VOL_MIN",0.0,CFGF_NONE),
     CFG_FLOAT("VOL_MAX",1.0,CFGF_NONE),
     CFG_FLOAT("VOL_STEP",0.002,CFGF_NONE),
-    CFG_FLOAT("VOL_START",0.3,CFGF_NONE),
+    CFG_FLOAT("VOL_START",0.2,CFGF_NONE),
     CFG_END()
 };
 cfg_t *cfg;
@@ -136,6 +136,7 @@ char *extract_keyboard_eventname()
 
 int sendosc(float currvol)
 {
+
 
 
     if (lo_send(t, cfg_getstr(cfg, "OSC_PATH"), "ff", currvol) == -1) {
