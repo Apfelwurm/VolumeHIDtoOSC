@@ -1,5 +1,5 @@
 Package: volumehidtoosc
 Version: 1.0.0-1
-Architecture: amd64
+Architecture: armhf
 Maintainer: Alexander Volz
 Description: usb volume hid to osc
