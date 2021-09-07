@@ -10,7 +10,7 @@ VolumeHIDtoOSC is a simple c service that allows to use a HID device under linux
 sudo dpkg -i volumehidtoosc_*_amd64.deb
 ```
 ```
-systemctl enable volumehidtoosc && systemctl start volumehidtoosc && systemctl status volumehidtoosc
+sudo systemctl enable volumehidtoosc && sudo systemctl start volumehidtoosc && sudo systemctl status volumehidtoosc
 ```
 ## uninstalling on ubuntu/debian
 
