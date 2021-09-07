@@ -7,6 +7,7 @@ cmake -DCMAKE_INSTALL_PREFIX=/usr ../
 make
 mkdir packageroot
 cp -rf ../DEBIANARMHF packageroot/
+mv DEBIANARMHF DEBIAN
 mkdir -p packageroot/usr/bin/
 mkdir -p packageroot/etc/volumehidtoosc/
 mkdir -p packageroot/usr/lib/systemd/system/
