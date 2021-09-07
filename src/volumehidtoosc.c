@@ -23,7 +23,7 @@
  */
 
 
-
+//includes
 #include <stdio.h>
 #include <fcntl.h>
 #include <sys/ioctl.h>
@@ -36,6 +36,7 @@
 #include <confuse.h>
 #include "lo/lo.h"
 
+//define config
 cfg_opt_t opts[] =
 {
     CFG_STR("VENDOR", "Vendor=2341", CFGF_NONE),
@@ -56,13 +57,15 @@ cfg_opt_t opts[] =
     CFG_FLOAT("VOL_START",0.2,CFGF_NONE),
     CFG_END()
 };
+
+//create objects
 cfg_t *cfg;
-
 lo_address t;
+FILE *logfile= NULL;
 
 
-
-char *extract_keyboard_eventname()
+//get hid eventname based on configured filters
+char *extract_hid_eventname()
 {
     FILE *fp = NULL;
     char buffer[1024];
@@ -75,7 +78,8 @@ char *extract_keyboard_eventname()
     fp = fopen("/proc/bus/input/devices", "r");
     if (!fp) {
         int err = errno;
-        fprintf(stderr, "Unable to open file. %s\n", strerror(err));
+        fprintf(logfile, "Unable to open file. %s\n", strerror(err));
+        fflush(logfile);
         return NULL;
     }
     memset(buffer, 0, sizeof(buffer));
@@ -90,7 +94,8 @@ char *extract_keyboard_eventname()
                     *ptr2 = '\0';
                 eventname = strdup(ptr);
                 if (!eventname) {
-                    fprintf(stderr, "Out of memory.\n");
+                    fprintf(logfile, "Out of memory.\n");
+                    fflush(logfile);
                     break;
                 }
             }
@@ -134,13 +139,13 @@ char *extract_keyboard_eventname()
     }
 }
 
+//send float value via osc
 int sendosc(float currvol)
 {
-
-
-
+    printf("sendvol  %f\n", currvol);
     if (lo_send(t, cfg_getstr(cfg, "OSC_PATH"), "ff", currvol) == -1) {
-        printf("OSC error %d: %s\n", lo_address_errno(t), lo_address_errstr(t));
+        fprintf(logfile, "OSC error %d: %s\n", lo_address_errno(t), lo_address_errstr(t));
+        fflush(logfile);
     }
     return 0;
 }
@@ -148,8 +153,12 @@ int sendosc(float currvol)
 
 int main(void)
 {
+    //create objects
+    char *evdev;
     int fd;
     struct input_event evt;
+
+    //nessecary running variables
     int volpluscount = 0;
     int volminuscount = 0;
     int mutetogglecount = 0;
@@ -158,42 +167,65 @@ int main(void)
     bool mutetrigger = false;
     bool unmutetrigger = false;
     bool mute = false;
-    char *evdev;
 
+    //initialize logging
+    logfile = fopen("/var/log/volumehidtoosc/volumehidtoosc.log", "w");
+
+    if (!logfile) {
+        int err = errno;
+        printf("Unable to open logfile. %s\n", strerror(err));
+        sleep(15);
+        exit(1);
+    }
+
+    fprintf(logfile, "volumehidtoosc started!\n");
+    fflush(logfile);
+
+    //initialize config
     cfg = cfg_init(opts, CFGF_NONE);
     if(cfg_parse(cfg, "/etc/volumehidtoosc/volumehidtoosc.conf") == CFG_PARSE_ERROR)
     {
-        printf("Config error");
+        fprintf(logfile, "config error, exit!\n");
+        fflush(logfile);
+        sleep(15);
         exit(1);
     }
 
     
-    
 
+    //create osc address object
     t = lo_address_new(cfg_getstr(cfg, "IP"), cfg_getstr(cfg, "PORT"));
     
-    volume = cfg_getfloat(cfg, "VOL_START");
-    sendosc(volume);
-    sentvolume = volume;
 
-    if (extract_keyboard_eventname() == "not found")
+
+    //get hid device and exif if not available
+    if (strcmp(extract_hid_eventname(), "not found") == 0 || extract_hid_eventname() == NULL)
     {
-        printf("Controller not found");
+        fprintf(logfile, "controller not found or error when opening file! exit!\n");
+        fflush(logfile);
+        sleep(15);
         exit(1);
     }
     else
     {
-        fprintf(stderr, "selected /dev/input/%s\n", extract_keyboard_eventname());
-        asprintf(&evdev, "%s%s", "/dev/input/", extract_keyboard_eventname());
+        fprintf(logfile, "selected /dev/input/%s\n", extract_hid_eventname());
+        fflush(logfile);
+        asprintf(&evdev, "%s%s", "/dev/input/", extract_hid_eventname());
     }
 
+    //send initial float value
+    volume = cfg_getfloat(cfg, "VOL_START");
+    sendosc(volume);
+    sentvolume = volume;
+
+    //open hid device
     fd = open(evdev, O_RDWR);
     ioctl(fd, EVIOCGRAB, 1);
 
 
     while(read(fd, &evt, sizeof(struct input_event)) > 0) {
 
-
+        //count and mute logic
          if (!mute)
         {
             if (evt.code == cfg_getint(cfg, "VOL_PLUS"))
@@ -255,7 +287,6 @@ int main(void)
         {
             if (volume != sentvolume)
             {
-                printf("sendvol  %f\n", volume);
                 sendosc(volume);
                 sentvolume = volume;
             }
@@ -263,20 +294,21 @@ int main(void)
 
         if(mutetrigger)
         {
-            printf("sendvol  %f\n", cfg_getfloat(cfg, "VOL_MIN"));
+
             sendosc(cfg_getfloat(cfg, "VOL_MIN"));
             mutetrigger = false;
             mute = true;
         }
         if(unmutetrigger)
         {
-            printf("sendvol  %f\n", volume);
             sendosc(volume);
             unmutetrigger = false;
             mute = false;
         }
 
     }
-
+    fprintf(logfile, "hid removed! exit!\n");
+    fflush(logfile);
+    fclose(logfile);
 
 }

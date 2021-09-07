@@ -36,7 +36,7 @@ add_subdirectory (src)
 set (VOLUMEHIDTOOSC_CONF_DIR "/etc/volumehidtoosc")
 
 # Directory with systemd unit files
-set (SYSTEMD_UNIT_DIR "/usr/lib/systemd/user/")
+set (SYSTEMD_UNIT_DIR "/usr/lib/systemd/system/")
 
 # Macro for installing configuration files
 function(install_conf src dest)
@@ -70,7 +70,7 @@ endfunction(install_conf)
 target_link_libraries(volumehidtoosc confuse lo)
 
 # Install systemd unit files 
-#install_conf (./volumehidtoosc.service ${SYSTEMD_UNIT_DIR})
+install_conf (./volumehidtoosc.service ${SYSTEMD_UNIT_DIR})
 
 # Install config
 install_conf (./volumehidtoosc.conf ${VOLUMEHIDTOOSC_CONF_DIR})
