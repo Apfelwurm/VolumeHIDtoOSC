@@ -43,7 +43,9 @@ cfg_opt_t opts[] =
     CFG_STR("PRODUCT", "Product=484d", CFGF_NONE),
     CFG_STR("EV", "EV=1f", CFGF_NONE),
     CFG_STR("IP", "10.10.10.220", CFGF_NONE),
+    CFG_STR("IP2", "", CFGF_NONE),
     CFG_STR("PORT", "7001", CFGF_NONE),
+    CFG_STR("PORT2", "", CFGF_NONE),
     CFG_STR("OSC_PATH", "/1/mastervolume", CFGF_NONE),
     CFG_INT("VOL_PLUS",115,CFGF_NONE),
     CFG_INT("VOL_PLUS_TIMES",2,CFGF_NONE),
@@ -61,6 +63,7 @@ cfg_opt_t opts[] =
 //create objects
 cfg_t *cfg;
 lo_address t;
+lo_address t2;
 FILE *logfile= NULL;
 
 
@@ -147,6 +150,15 @@ int sendosc(float currvol)
         fprintf(logfile, "OSC error %d: %s\n", lo_address_errno(t), lo_address_errstr(t));
         fflush(logfile);
     }
+
+    if (strcmp(cfg_getstr(cfg, "IP2"), "") != 0 && strcmp(cfg_getstr(cfg, "PORT2"), "") != 0)
+    {
+        if (lo_send(t2, cfg_getstr(cfg, "OSC_PATH"), "ff", currvol) == -1) {
+            fprintf(logfile, "OSC error %d: %s\n", lo_address_errno(t), lo_address_errstr(t));
+            fflush(logfile);
+        }
+    }
+
     return 0;
 }
 
@@ -195,7 +207,14 @@ int main(void)
 
     //create osc address object
     t = lo_address_new(cfg_getstr(cfg, "IP"), cfg_getstr(cfg, "PORT"));
-    
+
+    //create second osc address object
+    if (strcmp(cfg_getstr(cfg, "IP2"), "") != 0 && strcmp(cfg_getstr(cfg, "PORT2"), "") != 0)
+    {
+
+        t2 = lo_address_new(cfg_getstr(cfg, "IP2"), cfg_getstr(cfg, "PORT2"));
+    }
+
 
 
     //get hid device and exif if not available

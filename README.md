@@ -52,6 +52,8 @@ Note: It currently has to run as root to access the hid
 | EV                | set the ev id of your usb hid  (if you need help look under detect hardware)                                  | 'EV=1f'           |
 | IP                | set the ip address of your destination server                                                                 | '10.10.10.220'    |
 | PORT              | set the incoming port of your destination server                                                              | '7001'            |
+| IP2               | set the ip address of your second destination server (optional)                                               | '10.10.10.221'    |
+| PORT2             | set the incoming port of your second destination server (optional)                                            | '7001'            |
 | OSC_PATH          | set the osc path to where the float should be sent                                                            | '/1/mastervolume' |
 | VOL_PLUS          | set the vol plus command id of your usb hid  (if you need help look under detect hardware)                    | 115               |
 | VOL_PLUS_TIMES    | set the amount of events received to trigger one volume change  (if you need help look under detect hardware) | 2                 |
