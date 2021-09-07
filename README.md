@@ -16,7 +16,7 @@ systemctl enable volumehidtoosc && systemctl start volumehidtoosc && systemctl s
 
 * open your cli and run:
 ```
-sudo dpkg -i volumehidtoosc_*_amd64.deb
+sudo dpkg -r volumehidtoosc
 ```
 ## prerequirements for building on debian
 
