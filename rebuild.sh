@@ -1,5 +1,6 @@
 #!/bin/bash
 rm -rf build
+set -e
 mkdir build
 cd build
 cmake -DCMAKE_INSTALL_PREFIX=/usr ../ 
