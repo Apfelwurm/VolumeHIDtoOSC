@@ -47,7 +47,7 @@ jobs:
       run: 'sed -i "s|^set.*PATCH_LEVEL.*$|set (\${PROJECT_NAME}_PATCH_LEVEL $VOLUMEHIDTOOSCDPATCHVER)|g" CMakeLists.txt'
 
     - name: install build  deps
-      run: 'apt-get install libconfuse-dev liblo-dev' 
+      run: 'sudo apt-get install libconfuse-dev liblo-dev' 
 
     - name: run build
       run: './rebuild.sh'    
