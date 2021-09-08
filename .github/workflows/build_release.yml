@@ -63,6 +63,8 @@ jobs:
         copy_artifact_path: 'build/volumehidtoosc_1.0.0_armhf.deb'
         copy_artifact_dest: "./build/"
         commands: |
+          sudo apt-get update -y
+          sudo apt-get install --no-install-recommends -y libconfuse-dev liblo-dev cmake build-essential
           sudo ./rebuild_armhf.sh 
 
 
