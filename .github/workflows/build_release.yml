@@ -63,15 +63,17 @@ jobs:
         copy_artifact_path: 'build/volumehidtoosc_1.0.0_armhf.deb'
         copy_artifact_dest: "./build/"
         commands: |
+          ls
+          sudo ls
           sudo apt-get update -y
           sudo apt-get install --no-install-recommends -y libconfuse-dev liblo-dev build-essential wget libssl-dev
-          wget https://github.com/Kitware/CMake/releases/download/v3.21.2/cmake-3.21.2.tar.gz
-          tar xzf cmake-3.21.2.tar.gz
-          cd cmake-3.21.2
-          sudo ./bootstrap -- -DCMAKE_BUILD_TYPE:STRING=Release
-          sudo make
-          sudo make install
-          cmake -version
+          # wget https://github.com/Kitware/CMake/releases/download/v3.21.2/cmake-3.21.2.tar.gz
+          # tar xzf cmake-3.21.2.tar.gz
+          # cd cmake-3.21.2
+          # sudo ./bootstrap -- -DCMAKE_BUILD_TYPE:STRING=Release
+          # sudo make
+          # sudo make install
+          # cmake -version
           sudo ./rebuild_armhf.sh 
 
 
