@@ -64,7 +64,14 @@ jobs:
         copy_artifact_dest: "./build/"
         commands: |
           sudo apt-get update -y
-          sudo apt-get install --no-install-recommends -y libconfuse-dev liblo-dev cmake build-essential
+          sudo apt-get install --no-install-recommends -y libconfuse-dev liblo-dev build-essential wget 
+          wget https://github.com/Kitware/CMake/releases/download/v3.21.2/cmake-3.21.2.tar.gz
+          tar xzf cmake-3.21.2.tar.gz
+          cd cmake-3.21.2
+          sudo ./configure
+          sudo make
+          sudo make install
+          cmake -version
           sudo ./rebuild_armhf.sh 
 
 
