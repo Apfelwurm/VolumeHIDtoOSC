@@ -146,14 +146,14 @@ char *extract_hid_eventname()
 int sendosc(float currvol)
 {
     printf("sendvol  %f\n", currvol);
-    if (lo_send(t, cfg_getstr(cfg, "OSC_PATH"), "ff", currvol) == -1) {
+    if (lo_send(t, cfg_getstr(cfg, "OSC_PATH"), "f", currvol) == -1) {
         fprintf(logfile, "OSC error %d: %s\n", lo_address_errno(t), lo_address_errstr(t));
         fflush(logfile);
     }
 
     if (strcmp(cfg_getstr(cfg, "IP2"), "") != 0 && strcmp(cfg_getstr(cfg, "PORT2"), "") != 0)
     {
-        if (lo_send(t2, cfg_getstr(cfg, "OSC_PATH"), "ff", currvol) == -1) {
+        if (lo_send(t2, cfg_getstr(cfg, "OSC_PATH"), "f", currvol) == -1) {
             fprintf(logfile, "OSC error %d: %s\n", lo_address_errno(t), lo_address_errstr(t));
             fflush(logfile);
         }
