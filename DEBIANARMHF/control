@@ -1,5 +1,6 @@
 Package: volumehidtoosc
 Version: 1.0.0-1
 Architecture: armhf
+Depends: liblo7, libconfuse2
 Maintainer: Alexander Volz
 Description: usb volume hid to osc
