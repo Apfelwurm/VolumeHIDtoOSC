@@ -1,4 +1,4 @@
-name: volumehidtoosc_build_release
+name: volumehidtoosc_build_release_armhf
 
 on:
   push:
@@ -19,7 +19,7 @@ on:
     - '!README.md'
 
 jobs:
-  build:
+  build_armhf:
     runs-on: ubuntu-latest
     steps:
     - name: checkout
@@ -45,14 +45,7 @@ jobs:
       run: 'sed -i "s|^set.*VERSION_MINOR.*$|set (\${PROJECT_NAME}_VERSION_MINOR $VOLUMEHIDTOOSCDMINORVER)|g" CMakeLists.txt'
     - name: set patchVersion cmake
       run: 'sed -i "s|^set.*PATCH_LEVEL.*$|set (\${PROJECT_NAME}_PATCH_LEVEL $VOLUMEHIDTOOSCDPATCHVER)|g" CMakeLists.txt'
-
-    - name: install build  deps
-      run: 'sudo apt-get install libconfuse-dev liblo-dev' 
-
-    - name: run build
-      run: './rebuild.sh' 
-      
-    - name: Run arm build
+    - name: Run armhf build
       uses: pguyot/arm-runner-action@v1
       id: arm_runner_tests
       with:
@@ -63,27 +56,16 @@ jobs:
         copy_artifact_path: 'build/volumehidtoosc_1.0.0_armhf.deb'
         copy_artifact_dest: "./build/"
         commands: |
-          ls
-          sudo ls
           sudo apt-get update -y
-          sudo apt-get install --no-install-recommends -y libconfuse-dev liblo-dev build-essential wget libssl-dev
-          wget https://github.com/Kitware/CMake/releases/download/v3.21.2/cmake-3.21.2.tar.gz
-          tar xzf cmake-3.21.2.tar.gz
-          cd cmake-3.21.2
-          sudo ./bootstrap -- -DCMAKE_BUILD_TYPE:STRING=Release
-          sudo make
-          sudo make install
-          cd ..
+          sudo apt-get install --no-install-recommends -y libconfuse-dev liblo-dev build-essential wget libssl-dev python3 python3-pip 
+          sudo pip install lastversion
+          wget $(lastversion https://github.com/Apfelwurm/cmake-raspberry --assets | grep *armhf*.deb)
+          dpkg -i cmake_*_armhf*.deb
           sudo ./rebuild_armhf.sh 
 
 
-
-    - name: move build
-      run: 'mv build/volumehidtoosc_1.0.0_amd64.deb $(echo "build/volumehidtoosc_"$VOLUMEHIDTOOSCDVER"_amd64.deb")'
-    - name: move arm build
+    - name: move armhf build
       run: 'mv build/volumehidtoosc_1.0.0_armhf.deb $(echo "build/volumehidtoosc_"$VOLUMEHIDTOOSCDVER"_armhf.deb")'
-
-
 
 
     - name: make release
