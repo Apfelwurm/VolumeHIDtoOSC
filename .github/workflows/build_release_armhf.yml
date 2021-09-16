@@ -37,7 +37,7 @@ jobs:
     - name: set patchVersion
       run:  echo "VOLUMEHIDTOOSCDPATCHVER=$(echo $VOLUMEHIDTOOSCDVER | sed 's|-.*$||g' | cut -d. -f3 )" >> $GITHUB_ENV  
     - name: set version control
-      run: 'sed -i "s|Version: .*$|Version: $VOLUMEHIDTOOSCDVER|g" DEBIAN/control'
+      run: 'sed -i "s|Version: .*$|Version: $VOLUMEHIDTOOSCDVER|g" DEBIANARMHF/control'
 
     - name: set majorVersion cmake
       run: 'sed -i "s|^set.*VERSION_MAJOR.*$|set (\${PROJECT_NAME}_VERSION_MAJOR $VOLUMEHIDTOOSCDMAJORVER)|g" CMakeLists.txt'
