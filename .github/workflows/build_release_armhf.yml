@@ -57,11 +57,9 @@ jobs:
         copy_artifact_dest: "./build/"
         commands: |
           sudo apt-get update -y
-          sudo apt-get install --no-install-recommends -y libconfuse-dev liblo-dev build-essential wget libssl-dev python3 python3-pip 
-          sudo python3 -m pip install lastversion
-          /usr/local/bin/lastversion https://github.com/Apfelwurm/cmake-raspberry --assets 
-          wget $(/usr/local/bin/lastversion https://github.com/Apfelwurm/cmake-raspberry --assets)
-          dpkg -i cmake_*_armhf*.deb
+          sudo apt-get install --no-install-recommends -y libconfuse-dev liblo-dev build-essential wget libssl-dev jq curl
+          wget $(curl --silent "https://api.github.com/repos/Apfelwurm/cmake-raspberry/releases/latest" | jq -r '.assets[0].browser_download_url')
+          dpkg -i cmake_*_armhf.deb
           sudo ./rebuild_armhf.sh 
 
 
