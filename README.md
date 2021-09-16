@@ -4,10 +4,10 @@ VolumeHIDtoOSC is a simple c service that allows to use a HID device under linux
 
 ## installing on ubuntu/debian
 
-* download the [latest release](https://github.com/Apfelwurm/VolumeHIDtoOSC/releases)
+* download the [latest release](https://github.com/Apfelwurm/VolumeHIDtoOSC/releases) depending on your architecture (most likely x64, for Raspberry use armhf)
 * open your cli in the download folder and run:
 ```
-sudo dpkg -i volumehidtoosc_*_amd64.deb
+sudo dpkg -i volumehidtoosc_*.deb
 ```
 ```
 sudo systemctl enable volumehidtoosc && sudo systemctl start volumehidtoosc && sudo systemctl status volumehidtoosc
