@@ -58,7 +58,7 @@ jobs:
         commands: |
           sudo apt-get update -y
           sudo apt-get install --no-install-recommends -y libconfuse-dev liblo-dev build-essential wget libssl-dev python3 python3-pip 
-          sudo pip install lastversion
+          sudo python3 -m pip install lastversion
           wget $(lastversion https://github.com/Apfelwurm/cmake-raspberry --assets | grep *armhf*.deb)
           dpkg -i cmake_*_armhf*.deb
           sudo ./rebuild_armhf.sh 
