@@ -60,7 +60,9 @@ jobs:
           sudo apt-get install --no-install-recommends -y libconfuse-dev liblo-dev build-essential wget libssl-dev jq curl
           wget $(curl --silent "https://api.github.com/repos/Apfelwurm/cmake-raspberry/releases/latest" | jq -r '.assets[0].browser_download_url')
           dpkg -i cmake_*_armhf.deb
-          sudo ./rebuild_armhf.sh 
+          sudo ./rebuild_armhf.sh
+          ls
+          ls build 
 
 
     - name: move armhf build
