@@ -54,27 +54,20 @@ jobs:
         cpu: 'arm1176'
         optimize_image: no
         copy_artifact_path: 'build/volumehidtoosc_1.0.0_armhf.deb'
-        copy_artifact_dest: "./build/"
         commands: |
           sudo apt-get update -y
           sudo apt-get install --no-install-recommends -y libconfuse-dev liblo-dev build-essential wget libssl-dev jq curl
           wget $(curl --silent "https://api.github.com/repos/Apfelwurm/cmake-raspberry/releases/latest" | jq -r '.assets[0].browser_download_url')
           dpkg -i cmake_*_armhf.deb
           sudo ./rebuild_armhf.sh
-          ls
-          ls build 
-
-
     - name: move armhf build
-      run: 'mv build/volumehidtoosc_1.0.0_armhf.deb $(echo "build/volumehidtoosc_"$VOLUMEHIDTOOSCDVER"_armhf.deb")'
-
-
+      run: 'mv volumehidtoosc_1.0.0_armhf.deb $(echo "volumehidtoosc_"$VOLUMEHIDTOOSCDVER"_armhf.deb")'
     - name: make release
       if: ${{ (startsWith(github.ref, 'refs/tags/v')) && (!(contains(github.ref, '-beta'))) }}
       uses: softprops/action-gh-release@v1
       with:
         files: |
-          ./build/volumehidtoosc_*.deb
+          volumehidtoosc_*.deb
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}   
     - name: make release
@@ -83,6 +76,6 @@ jobs:
       with:
         prerelease: true
         files: |
-          ./build/volumehidtoosc_*.deb
+          volumehidtoosc_*.deb
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}   
